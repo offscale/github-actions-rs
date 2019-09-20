@@ -13,17 +13,6 @@ pub enum Steps {
     name{name: String, run: String},
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub enum Run {
-    run(String)
-}
-
-#[serde(untagged)]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub enum Trigger {
-    push(String)
-}
-
 #[derive(Debug)]
 pub struct FileError {
     description : String
