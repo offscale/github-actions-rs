@@ -70,12 +70,7 @@ mod tests {
     #[test]
     fn test_struct() -> Result<(), FileError> {
 
-        let path = "src/resources/rust.yml";
-
-        let mut contents = String::new();
-        let mut file = File::open(path)?;
-        file.read_to_string(&mut contents)?;
-
+        // Create the workflow struct.
         let original_workflow = Workflow {
             name: "Rust".to_string(),
             on: "push".to_string(),
@@ -89,15 +84,21 @@ mod tests {
             }
         };
 
-        let s = serde_yaml::to_string(&original_workflow)?;
+        // Serialize into yaml
+        let workflow_string = serde_yaml::to_string(&original_workflow)?;
 
-        let string = s.replace("\"on\"", "on").trim().to_string();
+        // TEMPORARY - formats the 'on' to the correct format (not sure why it serialises differently
+        // in serde.)
+        let workflow_string = workflow_string.replace("\"on\"", "on").trim().to_string();
 
-        let deserialized_workflow : Workflow = serde_yaml::from_str::<Workflow>(&string)?;
+        // deserialise the string back into a Workflow struct.
+        let deserialized_workflow : Workflow = serde_yaml::from_str::<Workflow>(&workflow_string)?;
 
+        // Write new yaml file to a file (output.yml)
         let mut new_file = File::create("src/resources/output.yml")?;
-        new_file.write_all(string.as_bytes())?;
+        new_file.write_all(workflow_string.as_bytes())?;
 
+        // Check that the structs are the same.
         assert_eq!(original_workflow, deserialized_workflow);
 
         Ok(())
