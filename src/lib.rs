@@ -1,55 +1,14 @@
 use serde::*;
 use std::fs::File;
-use std::io::prelude::*;
 use std::env;
-use std::error::Error;
-use core::fmt;
-use std::fmt::Formatter;
+
+pub mod errors;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Steps {
     uses{uses: String},
     name{name: String, run: String},
-}
-
-#[derive(Debug)]
-pub struct FileError {
-    description : String
-}
-
-impl FileError {
-    pub fn new(msg: &str) -> FileError {
-        FileError { description: msg.to_string() }
-    }
-}
-
-impl fmt::Display for FileError {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}", self.description)
-    }
-}
-
-impl Error for FileError {
-
-    fn description(&self) -> &str {
-        "Error reading file"
-    }
-}
-
-impl From<std::io::Error> for FileError {
-    #[inline]
-    fn from(error: std::io::Error) -> FileError {
-        FileError { description: error.description().to_string() }
-    }
-}
-
-impl From<serde_yaml::Error> for FileError {
-    fn from(error: serde_yaml::Error) -> FileError {
-        FileError {
-            description : "failed to parse struct".to_string()
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -74,7 +33,7 @@ pub struct Build {
 mod tests {
 
     use crate::Workflow;
-    use crate::FileError;
+    use crate::errors::FileError;
     use crate::Build;
     use crate::Jobs;
     use crate::Steps;
