@@ -1,16 +1,22 @@
+/// # Offscale github actions
+///
+/// This repository defines a set of structs for the conversion and storage
+/// of github actions keywords. This library stores the essential structs which are
+/// intended to be reused across multiple conversion libraries.
+
+// Imports
+
 use serde::*;
 use std::fs::File;
 use std::env;
 
+// Errors module
 pub mod errors;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum Steps {
-    uses{uses: String},
-    name{name: String, run: String},
-}
-
+/// The basic Workflow struct. Takes in the following information:
+/// name: The workflow name.
+/// on: When the workflow action will occur (push, pull...etc)
+/// jobs: The actual actions which will occur when the action is triggered.
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Workflow {
     name: String,
@@ -18,17 +24,38 @@ pub struct Workflow {
     jobs: Jobs
 }
 
+/// Defines a set of actions which will occur. This stores all build commands
+/// which will happen when the trigger occurs.
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Jobs {
     build: Build,
 }
 
+/// Defines an action, or set of actions. The struct takes in the following inputs:
+/// runs_on: defines the system it will run on.
+/// steps: Defines what commands will be undertaken with this job.
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Build {
     runs_on: String,
     steps: Vec<Steps>,
 }
 
+/// Enums which store information about which steps will be occuring.
+/// So far, two steps are defined:
+/// uses: defines a separate action urs which will occur.
+/// name: Defines a command name, along wiht its specific cli command
+/// eg: cargo run.
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Steps {
+    uses { uses: String },
+    name { name: String, run: String },
+}
+
+/// Basic test (check 'resources' folder for intended output)
+/// This test attempts to replicate the 'rust.yml' file in the resources folder.
+/// Uses the specified structs to re-create that file and checks to see whether the
+/// struct can be safely serialised and deserialized.
 #[cfg(test)]
 mod tests {
 
